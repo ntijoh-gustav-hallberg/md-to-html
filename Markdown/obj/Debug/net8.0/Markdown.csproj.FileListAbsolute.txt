@@ -1,0 +1,15 @@
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/bin/Debug/net8.0/Markdown
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/bin/Debug/net8.0/Markdown.deps.json
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/bin/Debug/net8.0/Markdown.runtimeconfig.json
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/bin/Debug/net8.0/Markdown.dll
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/bin/Debug/net8.0/Markdown.pdb
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.AssemblyInfoInputs.cache
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.AssemblyInfo.cs
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.csproj.CoreCompileInputs.cache
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.sourcelink.json
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.dll
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/refint/Markdown.dll
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.pdb
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/Markdown.genruntimeconfig.cache
+/Users/gustav.hallberg/Documents/md-to-html/Markdown/obj/Debug/net8.0/ref/Markdown.dll
