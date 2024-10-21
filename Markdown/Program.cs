@@ -36,7 +36,7 @@ void writeToFile(string fileName, string fileContent) {
     string parsedFileContent = ParseMarkdown(fileContent);
 
     using (StreamWriter outputFile = new StreamWriter(filePath))
-    
+    {
         outputFile.Write(parsedFileContent);
     }
 }
@@ -92,6 +92,37 @@ static string ParseLine(string line)
     }
 
     return string.Empty;
+}
+
+void parseFrontMatter(string data) {
+    // Split input by lines
+    string[] lines = data.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+    string title;
+    string image;
+    string posted;
+    bool startLinePassed = false;
+
+    foreach (var line in lines)
+    {
+        // Check if we are at start of frontmatter
+        if(line == "---" && !startLinePassed) {
+            startLinePassed = true;
+            continue;
+        }
+
+        // Check if we are at end of frontmatter, if so break loop
+        if(line == "---" && startLinePassed) {
+            break;
+        }
+        
+        if(line.StartsWith("title:")) {
+            title = line.Split(new[] {"title: "}, StringSplitOptions.None)[1];
+        } else if(line.StartsWith("image:")) {
+            image = line.Split(new[] {"image: "}, StringSplitOptions.None)[1];
+        } else if(line.StartsWith("posted:")) {
+            posted = line.Split(new[] {"posted: "}, StringSplitOptions.None)[1];
+        }
+    }
 }
 
 getFiles();
