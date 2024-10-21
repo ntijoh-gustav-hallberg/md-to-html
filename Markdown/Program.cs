@@ -36,7 +36,7 @@ void writeToFile(string fileName, string fileContent) {
     string parsedFileContent = ParseMarkdown(fileContent);
 
     using (StreamWriter outputFile = new StreamWriter(filePath))
-    {
+    
         outputFile.Write(parsedFileContent);
     }
 }
