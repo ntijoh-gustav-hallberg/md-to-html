@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Formats.Asn1;
+using System.IO;
 using System.IO.Enumeration;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,36 +9,73 @@ string htmlFolderPath = "./html/";
 
 void getFiles() {
     // Read all files in directory
-    foreach(string file in Directory.EnumerateFiles(mdFolderPath, "*.md")) {
+    foreach(string item in Directory.GetFiles(mdFolderPath, "*", SearchOption.AllDirectories)) {
+        createFiles(getFileName(item));
+        
         // Read file into array line by line
-        string contents = File.ReadAllText(file);
+        string contents = File.ReadAllText(item);
 
-        createFiles(getFileName(file));
+        // TODO: img folder does not get created before causing error
+        if(getFileName(item).Substring(getFileName(item).Length-4) == ".jpg") {
+            Console.WriteLine(getFilePath(getFileName(item)));
+            if(!File.Exists(getFilePath(getFileName(item)))) {
+                File.Copy(item, getFilePath(getFileName(item)));
+            }
 
-        writeToFile(getFileName(file), contents);
+            continue;
+        }
+
+        writeToFile(getFileName(item), contents);
     }
 }
 
 string getFileName(string filePath) {
-    return Path.GetFileNameWithoutExtension(filePath);
+    return filePath.Replace("./docs/", "");
 }
 
 void createFiles(string fileName) {
-    string filePath = htmlFolderPath + fileName + ".html";
+    string filePath = getFilePath(fileName);
+    string directoryPath = htmlFolderPath + Path.GetDirectoryName(fileName);
+
+    if(fileName.Substring(fileName.Length-4) == ".jpg") {
+        return;
+    }
+
+    // Checks if directory exists, Creates if doesnt
+    if(!Directory.Exists(filePath)) {
+        Directory.CreateDirectory(directoryPath);
+    }
+
+    // Checks if file exist, delete if does
     if(File.Exists(filePath)) {
         File.Delete(filePath);
     }
 
+    // Creates new files
     File.Create(filePath).Close();
 }
 
 void writeToFile(string fileName, string fileContent) {
-    string filePath = htmlFolderPath + fileName + ".html";
-    string parsedFileContent = ParseMarkdown(fileContent);
+    string filePath = getFilePath(fileName);
+
+    string parsedFileContent = fileContent;
+
+    if(fileName.Substring(fileName.Length-3) == ".md") {
+        parsedFileContent = ParseMarkdown(fileContent);
+    }
 
     using (StreamWriter outputFile = new StreamWriter(filePath))
     {
         outputFile.Write(parsedFileContent);
+    }
+}
+
+string getFilePath(string fileName) {
+    if(fileName.Substring(fileName.Length - 3) == ".md") {
+        return htmlFolderPath + fileName.Substring(0, fileName.Length - 3) + ".html";
+    }
+    else {
+        return htmlFolderPath + fileName;
     }
 }
 
@@ -49,8 +87,20 @@ static string ParseMarkdown(string markdown)
     // Split input by lines
     string[] lines = markdown.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
+    int lineIndex = 0;
+    bool hasStartedFrontMatter = false;
+
     foreach (var line in lines)
     {
+        if(lineIndex <= 5) {
+            string frontMatter = parseFrontMatter(line, hasStartedFrontMatter);
+            if(frontMatter != "")
+                html.AppendLine(frontMatter);
+
+            lineIndex++;
+            continue;
+        }
+
         string htmlLine = ParseLine(line);
         html.AppendLine(htmlLine);
     }
@@ -94,35 +144,28 @@ static string ParseLine(string line)
     return string.Empty;
 }
 
-void parseFrontMatter(string data) {
-    // Split input by lines
-    string[] lines = data.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+static string parseFrontMatter(string line, bool hasStartedFrontMatter) {
     string title;
     string image;
     string posted;
-    bool startLinePassed = false;
-
-    foreach (var line in lines)
-    {
-        // Check if we are at start of frontmatter
-        if(line == "---" && !startLinePassed) {
-            startLinePassed = true;
-            continue;
-        }
-
-        // Check if we are at end of frontmatter, if so break loop
-        if(line == "---" && startLinePassed) {
-            break;
-        }
-        
-        if(line.StartsWith("title:")) {
-            title = line.Split(new[] {"title: "}, StringSplitOptions.None)[1];
-        } else if(line.StartsWith("image:")) {
-            image = line.Split(new[] {"image: "}, StringSplitOptions.None)[1];
-        } else if(line.StartsWith("posted:")) {
-            posted = line.Split(new[] {"posted: "}, StringSplitOptions.None)[1];
-        }
+    
+    if(line.StartsWith("---")) {
+        hasStartedFrontMatter = true;
+        return "<head>";
+    } else if (line.StartsWith("---") && hasStartedFrontMatter) {
+        return "</head>";
+    } else if(line.StartsWith("title:")) {
+        title = line.Split(new[] {"title: "}, StringSplitOptions.None)[1];
+        return $"<title>{title}</title>";
+    } else if(line.StartsWith("image:")) {
+        image = line.Split(new[] {"image: "}, StringSplitOptions.None)[1];
+        return $"<meta type='image'>{image}</meta>";
+    } else if(line.StartsWith("posted:")) {
+        posted = line.Split(new[] {"posted: "}, StringSplitOptions.None)[1];
+        return $"<meta type='posted'>{posted}</meta>";
     }
+
+    return "";
 }
 
 getFiles();
